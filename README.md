@@ -21,5 +21,5 @@ Group multiple Matrix protocol Eurorack modules together as a single virtual syn
 ## Software
 Declarative and reproducible configurations to encourage experimentation, sharing and pull requests. Screw up? Boot into a different version of your configuration at startup.
 
-## Not a Eurocrack user?
+## Not a Euro~c~rack user?
 Plug in a high quality external PSU and 3D print a case to fit your use.
