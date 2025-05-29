@@ -1,5 +1,5 @@
 # matrix-protocol-eurorack-module
-Open source decentalized audio, MIDI and control voltage via Matrix protocol with collaborators, friends, family, strangers, and enemies. Create a globe-spanning Eurorack synth patch or experiment with modules from afar. Embrace serendipity.
+Open source decentalized audio, MIDI and control voltage via [Matrix protocol](https://github.com/matrix-org) with collaborators, friends, family, strangers, and enemies. Create a globe-spanning Eurorack synth patch or experiment with modules from afar. Embrace serendipity.
 
 Choose what Matrix space you want to connect to. Spaces can federate with each other. Keep it private with one-on-one sessions, scale up to get your whole band involved, or go global with new realms of scalable decentralized open sourcery.
 
