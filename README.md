@@ -16,7 +16,7 @@ Optionally add a microphone, webcam and display in a compact module. Chat with y
 Optionally add USB sockets via an expansion module for class-compliant audio interface and MIDI-USB host support.
 
 ### Increase the number of signals you can broadcast and receive simultaneously with more Matrix protocol Eurorack modules
-Group multiple Matrix protocol Eurorack modules together as a 
+Group multiple Matrix protocol Eurorack modules together as a single virtual synth for easy visualization and remote collaboration.
 
 ## Software
 Declarative and reproducible configurations to encourage experimentation, sharing and pull requests. Screw up? Boot into a different version of your configuration at startup.
