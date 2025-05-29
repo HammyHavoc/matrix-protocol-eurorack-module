@@ -21,5 +21,12 @@ Group multiple Matrix protocol Eurorack modules together as a single virtual syn
 ## Software
 Declarative and reproducible configurations to encourage experimentation, sharing and pull requests. Screw up? Boot into a different version of your configuration at startup.
 
+Matrix protocol is free open source, decentralized, self-hostable, and is seeing enormous success within the EU bloc with emergency services, government and military all relying on it for their real-time comms. Good enough for them, good enough for everyone. Imagine what you can do with Matrix protocol that can complement commonly getting audio, MIDI and CV into a globe-spanning open protcol.
+
 ## Not a Euro~c~rack user?
 Plug in a high quality external PSU and 3D print a case to fit your use.
+
+## Goals
+- Some people choose to put a man on the moon. We choose to take the ~piss~ biscuit by setting a world record for the largest decentralized synth patch and taking a Eurorack patch around the globe umpteen times.
+- Accessible and affordable. We want everyone to have one, even if they have to build it for themselves (a little bit of synth DIY never hurt anybody).
+- We want people to be able to build these and sell them. Bollocks to the likes of Brexit and tariffs—connect the world through music and serendipitous connections with both familiar and new faces and sounds.
