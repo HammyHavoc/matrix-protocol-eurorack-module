@@ -30,3 +30,4 @@ Plug in a high quality external PSU and 3D print a case to fit your use.
 - Some people choose to put a man on the moon. We choose to take the ~piss~ biscuit by setting a world record for the largest decentralized synth patch and taking a Eurorack patch around the globe umpteen times.
 - Accessible and affordable. We want everyone to have one, even if they have to build it for themselves (a little bit of synth DIY never hurt anybody).
 - We want people to be able to build these and sell them. Bollocks to the likes of Brexit and tariffs—connect the world through music and serendipitous connections with both familiar and new faces and sounds.
+- Make late-night studio sessions a little bit less lonely for whoever, whenever.
