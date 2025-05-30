@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Together - Eurorack Module Visualization</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .hero-background {
+            background-image: 
+                linear-gradient(rgba(30, 60, 114, 0.8), rgba(42, 82, 152, 0.8)),
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
+            background-position: 0 0, 0 0, 0 0;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .eurorack-module {
+            width: 280px;
+            height: 514px;
+            background: linear-gradient(145deg, #2c2c54, #40407a);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 2px solid #555;
+        }
+        
+        .mounting-hole {
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            border: 2px solid #666;
+        }
+        
+        .mounting-hole.top-left { top: 8px; left: 8px; }
+        .mounting-hole.top-right { top: 8px; right: 8px; }
+        .mounting-hole.bottom-left { bottom: 8px; left: 8px; }
+        .mounting-hole.bottom-right { bottom: 8px; right: 8px; }
+        
+        .trs-jack {
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle, #1a1a1a, #333);
+            border-radius: 50%;
+            position: absolute;
+            border: 2px solid #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .trs-jack:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        .trs-jack.jack1 { top: 50px; left: 50%; transform: translateX(-114px); }
+        .trs-jack.jack2 { top: 50px; left: 50%; transform: translateX(-44px); }
+        .trs-jack.jack3 { top: 50px; left: 50%; transform: translateX(26px); }
+        .trs-jack.jack4 { top: 50px; left: 50%; transform: translateX(96px); }
+        
+        .oled-display {
+            width: 120px;
+            height: 64px;
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            border: 2px solid #444;
+            border-radius: 4px;
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffff00;
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .oled-content {
+            animation: scrollText 8s linear infinite;
+            white-space: nowrap;
+        }
+        
+        @keyframes scrollText {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .rotary-encoder {
+            width: 32px;
+            height: 32px;
+            background: radial-gradient(circle, #2c2c2c, #1a1a1a);
+            border-radius: 50%;
+            position: absolute;
+            top: 280px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .rotary-encoder:hover {
+            transform: translateX(-50%) rotate(15deg) scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        }
+        
+        .rotary-encoder::after {
+            display: none;
+        }
+        
+        .push-button {
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(circle, #444, #222);
+            border-radius: 50%;
+            position: absolute;
+            border: 2px solid #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .push-button:hover {
+            transform: scale(0.9);
+            background: radial-gradient(circle, #666, #444);
+        }
+        
+        .push-button.btn1 { bottom: 80px; left: 50%; transform: translateX(-112px); }
+        .push-button.btn2 { bottom: 80px; left: 50%; transform: translateX(-42px); }
+        .push-button.btn3 { bottom: 80px; left: 50%; transform: translateX(28px); }
+        .push-button.btn4 { bottom: 80px; left: 50%; transform: translateX(98px); }
+        
+        .label {
+            position: absolute;
+            font-size: 8px;
+            font-weight: bold;
+            color: #ccc;
+            text-align: center;
+        }
+        
+        .title {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .jack-labels,
+        .btn-labels {
+            display: none;
+        }
+        
+        .encoder-label {
+            display: none;
+        }
+        
+        .info-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .specs-table th,
+        .specs-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .specs-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-left: 3px solid #00ff88;
+            padding-left: 15px;
+            margin: 5px 0;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 0 8px 8px 0;
+        }
+        
+        h1, h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            max-width: 200px;
+        }
+
+        .logo-svg {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 16px;
+            color: #888;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel hero-background">
+            <h2>🎛️ Front Panel Preview</h2>
+            <div class="eurorack-module" id="module">
+                <!-- Mounting holes -->
+                <div class="mounting-hole top-left"></div>
+                <div class="mounting-hole top-right"></div>
+                <div class="mounting-hole bottom-left"></div>
+                <div class="mounting-hole bottom-right"></div>
+                
+                <!-- TRS Jacks -->
+                <div class="trs-jack jack1" data-tooltip="TRS I/O 1: Stereo Audio/CV + MIDI"></div>
+                <div class="trs-jack jack2" data-tooltip="TRS I/O 2: Stereo Audio/CV + MIDI"></div>
+                <div class="trs-jack jack3" data-tooltip="TRS I/O 3: Stereo Audio/CV + MIDI"></div>
+                <div class="trs-jack jack4" data-tooltip="TRS I/O 4: Stereo Audio/CV + MIDI"></div>
+                
+                <!-- OLED Display -->
+                <div class="oled-display">
+                    <div class="oled-content">◄ TOGETHER ► Connecting to Matrix space... ♪</div>
+                </div>
+                
+                <!-- Rotary Encoder -->
+                <div class="rotary-encoder" data-tooltip="Menu Navigation & Selection"></div>
+                
+                <!-- Push Buttons -->
+                <div class="push-button btn1" data-tooltip="Function Button 1"></div>
+                <div class="push-button btn2" data-tooltip="Function Button 2"></div>
+                <div class="push-button btn3" data-tooltip="Function Button 3"></div>
+                <div class="push-button btn4" data-tooltip="Function Button 4"></div>
+                
+                <!-- Labels -->
+                <div class="label title">TOGETHER</div>
+                
+                <!-- Split An Atom Logo -->
+                <div class="logo-svg">SPLIT AN ATOM</div>
+            </div>
+        </div>
+        
+        <div class="info-panel panel">
+            <h1>🌐 Together by Split An Atom</h1>
+            <p><strong>Decentralized collaborative Eurorack via Matrix protocol</strong></p>
+            
+            <h2>Key Features</h2>
+            <ul class="feature-list">
+                <li>🌍 Matrix protocol integration - decentralized, self-hostable, open source</li>
+                <li>🎵 4× 3.5mm TRS jacks (stereo I/O + MIDI support)</li>
+                <li>⚡ DC-coupled for control voltage compatibility</li>
+                <li>📟 128×64 OLED display with live session status</li>
+                <li>🎛️ Rotary encoder with push-button selection</li>
+                <li>🔘 4× tactile function buttons</li>
+                <li>🤝 Connect with collaborators globally or keep it intimate</li>
+                <li>🎲 Embrace serendipity with strangers and friends alike</li>
+            </ul>
+            
+            <h2>The Vision</h2>
+            <p><strong>Create globe-spanning Eurorack patches.</strong> Connect with collaborators, friends, family, strangers, and enemies through decentralized audio, MIDI, and CV sharing.</p>
+            
+            <p><strong>Matrix Protocol</strong> - the same open source, decentralized protocol trusted by EU government, military, and emergency services for real-time communications. Good enough for them, good enough for everyone.</p>
+            
+            <p><strong>Scale as needed:</strong> Keep it private with one-on-one sessions, get your whole band involved, or go global with new realms of scalable decentralized collaboration.</p>
+            
+            <h2>Expandable Ecosystem</h2>
+            <ul class="feature-list">
+                <li>🔌 <strong>Patchbay Module</strong> - Handle large numbers of broadcasts with virtual pages</li>
+                <li>💬 <strong>Comms Module</strong> - Add microphone, webcam, and display for natural chat</li>
+                <li>🔗 <strong>Expansion Module</strong> - USB support for class-compliant audio and MIDI-USB host</li>
+                <li>🎛️ <strong>Multiple Modules</strong> - Group together as single virtual synth for easy collaboration</li>
+            </ul>
+            
+            <h2>Goals</h2>
+            <p><strong>🌙 Make late-night studio sessions less lonely</strong> - Connect with fellow music makers whenever, wherever.</p>
+            <p><strong>🌍 World record ambitions</strong> - Help set a record for the largest decentralized synth patch, taking Eurorack patches around the globe.</p>
+            <p><strong>💝 Accessible & affordable</strong> - Everyone should have one, even if they build it themselves. A little synth DIY never hurt anybody.</p>
+            <p><strong>🔧 Build & sell freely</strong> - Open source hardware means you can manufacture and sell these modules. Connect the world through music, beyond borders and tariffs.</p>
+            
+            <h2>Technical Specifications</h2>
+            <table class="specs-table">
+                <tr><th>Protocol</th><td>Matrix - decentralized, federated, self-hostable</td></tr>
+                <tr><th>Dimension</th><td>70mm × 128.5mm (14HP Eurorack)</td></tr>
+                <tr><th>Power</th><td>±12V Eurorack + 5V from Pi</td></tr>
+                <tr><th>Audio Codec</th><td>PCM3168A (DC-coupled for CV)</td></tr>
+                <tr><th>I/O Channels</th><td>4 in, 4 out (8 total)</td></tr>
+                <tr><th>CV Range</th><td>±10V (Eurorack standard)</td></tr>
+                <tr><th>MIDI</th><td>TRS Type A/B compatible</td></tr>
+                <tr><th>Display</th><td>Yellow OLED 128×64px</td></tr>
+                <tr><th>Host</th><td>Raspberry Pi 4 (40-pin header)</td></tr>
+                <tr><th>Software</th><td>Declarative, reproducible configurations</td></tr>
+                <tr><th>License</th><td>FOSS/FOSH - Open Source Hardware</td></tr>
+            </table>
+            
+            <p><strong>Not a Eurorack user?</strong> Plug in a high-quality external PSU and 3D print a case to fit your use!</p>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <script>
+        // Interactive tooltips
+        const tooltip = document.getElementById('tooltip');
+        const interactiveElements = document.querySelectorAll('[data-tooltip]');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', (e) => {
+                tooltip.textContent = e.target.getAttribute('data-tooltip');
+                tooltip.style.opacity = '1';
+            });
+            
+            element.addEventListener('mousemove', (e) => {
+                tooltip.style.left = e.pageX + 10 + 'px';
+                tooltip.style.top = e.pageY - 10 + 'px';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                tooltip.style.opacity = '0';
+            });
+        });
+        
+        // Interactive encoder rotation
+        let rotation = 0;
+        const encoder = document.querySelector('.rotary-encoder');
+        encoder.addEventListener('click', () => {
+            rotation += 30;
+            encoder.style.transform = `translateX(-50%) rotate(${rotation}deg) scale(1.05)`;
+            
+            // Update OLED display
+            const oledContent = document.querySelector('.oled-content');
+            const messages = [
+                '◄ TOGETHER ► Connecting to Matrix space... ♪',
+                '🎵 Space: "Ambient Dreams" ◆ 3 users connected ♪',
+                '⚡ CV Out: +2.4V ◆ Tempo: 128 BPM ◆ Key: Am ♪',
+                '🌐 Latency: 12ms ◆ Sync: LOCKED ◆ Buffer: 64 ♪',
+                '🎲 Serendipity: ACTIVE ◆ Globe-spanning patch ♪'
+            ];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            oledContent.textContent = randomMessage;
+        });
+        
+        // Button press animation
+        document.querySelectorAll('.push-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.target.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    e.target.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+        
+        // TRS jack connection simulation
+        document.querySelectorAll('.trs-jack').forEach(jack => {
+            jack.addEventListener('click', (e) => {
+                e.target.style.boxShadow = '0 0 20px rgba(255, 215, 0, 1), inset 0 0 10px rgba(255, 215, 0, 0.5)';
+                setTimeout(() => {
+                    e.target.style.boxShadow = '';
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
