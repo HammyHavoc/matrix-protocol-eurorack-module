@@ -494,10 +494,18 @@
         
         // Connection and status management
         const oledContent = document.querySelector('.oled-content');
+        
+        // Function to generate random user count
+        function getRandomUserCount() {
+            return Math.floor(Math.random() * 1500) + 500; // Random between 500-2000
+        }
+        
+        let currentUserCount = getRandomUserCount();
+        
         const connectionSequence = [
             '◄ TOGETHER ► Connecting to Matrix space... ♪',
             '◄ ハローワールド ► Hello world! ♪',
-            '🎵 Space: "Ambient Dreams" ◆ 1085 users connected ♪'
+            () => `🎵 Space: "Ambient Dreams" ◆ ${currentUserCount} users connected ♪`
         ];
         
         // Status messages for encoder cycling after connection
@@ -505,8 +513,13 @@
             '⚡ CV Out: +2.4V ◆ Tempo: 128 BPM ◆ Key: Am ♪',
             '🌐 Latency: 12ms ◆ Sync: LOCKED ◆ Buffer: 64 ♪',
             '🎲 Serendipity: ACTIVE ◆ Globe-spanning patch ♪',
-            '🎵 Space: "Ambient Dreams" ◆ 1085 users connected ♪',
-            '🎶 Now Playing: "Horns of a Heart (Orion Remix)" ♪'
+            () => {
+                // Slightly vary user count each time we check
+                currentUserCount += Math.floor(Math.random() * 21) - 10; // +/- 10 users
+                currentUserCount = Math.max(500, Math.min(2000, currentUserCount)); // Keep within bounds
+                return `🎵 Space: "Ambient Dreams" ◆ ${currentUserCount} users connected ♪`;
+            },
+            '🎶 Now Playing: "Horns of a Heart (The Orion Correlation Remix)" ♪'
         ];
         
         let isConnected = false;
@@ -520,7 +533,8 @@
             
             function showNextMessage() {
                 if (sequenceIndex < connectionSequence.length) {
-                    oledContent.textContent = connectionSequence[sequenceIndex];
+                    const message = connectionSequence[sequenceIndex];
+                    oledContent.textContent = typeof message === 'function' ? message() : message;
                     
                     // Start audio when Hello World message appears (index 1)
                     if (sequenceIndex === 1) {
@@ -587,7 +601,8 @@
                 playConnectionSequence();
             } else if (isConnected) {
                 // Cycle through status messages
-                oledContent.textContent = statusMessages[statusIndex];
+                const message = statusMessages[statusIndex];
+                oledContent.textContent = typeof message === 'function' ? message() : message;
                 statusIndex = (statusIndex + 1) % statusMessages.length;
             }
             // Do nothing if currently connecting
