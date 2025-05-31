@@ -389,7 +389,7 @@
                 <div class="rotary-encoder" data-tooltip="Menu Navigation & Selection"></div>
                 
                 <!-- Push Buttons -->
-                <div class="push-button btn1" data-tooltip="Mute/Unmute Audio"></div>
+                <div class="push-button btn1" data-tooltip="Play/Pause Audio"></div>
                 <div class="push-button btn2" data-tooltip="Function Button 2"></div>
                 <div class="push-button btn3" data-tooltip="Function Button 3"></div>
                 <div class="push-button btn4" data-tooltip="Function Button 4"></div>
@@ -466,7 +466,7 @@
     <div class="tooltip" id="tooltip"></div>
     
     <!-- Audio element for ambient space soundtrack -->
-    <audio id="ambientAudio" loop>
+    <audio id="ambientAudio" loop preload="metadata" crossorigin="anonymous">
         <source src="https://archive.org/download/horns-of-a-heart-lost-and-found/02%20-%20Horns%20of%20a%20Heart%20%28The%20Orion%20Correlation%20Remix%29.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -547,11 +547,27 @@
                 const ambientAudio = document.getElementById('ambientAudio');
                 ambientAudio.volume = 0.3;
                 
+                console.log('Attempting to play audio...');
+                console.log('Audio element:', ambientAudio);
+                console.log('Audio src:', ambientAudio.currentSrc);
+                
                 // Try to start audio immediately on user interaction
                 ambientAudio.play().then(() => {
                     console.log('Audio started successfully');
+                    // Update OLED to show audio status
+                    setTimeout(() => {
+                        if (oledContent.textContent.includes('Press encoder')) {
+                            oledContent.textContent = '♪ Audio: Connected ♪ Starting session...';
+                        }
+                    }, 1000);
                 }).catch(e => {
-                    console.log('Audio will start after connection sequence:', e);
+                    console.error('Audio failed to start:', e);
+                    // Show error on display
+                    setTimeout(() => {
+                        if (oledContent.textContent.includes('Press encoder')) {
+                            oledContent.textContent = '⚠ Audio: Loading... ⚠ Session starting...';
+                        }
+                    }, 1000);
                 });
                 
                 playConnectionSequence();
@@ -566,21 +582,28 @@
         // Button press animation and functionality
         document.querySelectorAll('.push-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                // Handle mute/unmute for button 1
+                // Handle play/pause for button 1
                 if (e.target.classList.contains('btn1')) {
                     const ambientAudio = document.getElementById('ambientAudio');
-                    if (ambientAudio.muted) {
-                        ambientAudio.muted = false;
-                        e.target.style.background = 'radial-gradient(circle, #444, #222)';
+                    console.log('Button 1 clicked - Audio state:', ambientAudio.paused ? 'paused' : 'playing');
+                    
+                    if (ambientAudio.paused) {
+                        ambientAudio.play().then(() => {
+                            console.log('Audio resumed');
+                            e.target.style.background = 'radial-gradient(circle, #44ff44, #22aa22)';
+                        }).catch(e => {
+                            console.error('Failed to play audio:', e);
+                            e.target.style.background = 'radial-gradient(circle, #ff4444, #aa2222)';
+                        });
                     } else {
-                        ambientAudio.muted = true;
-                        e.target.style.background = 'radial-gradient(circle, #ff4444, #aa2222)';
+                        ambientAudio.pause();
+                        console.log('Audio paused');
+                        e.target.style.background = 'radial-gradient(circle, #ffaa44, #aa7722)';
                     }
                 }
                 
-                // Apply scale while preserving position
+                // Apply scale animation while preserving position
                 if (e.target.classList.contains('btn1')) {
-                    const currentBg = e.target.style.background;
                     e.target.style.transform = 'translateX(-112px) scale(0.8)';
                     setTimeout(() => {
                         e.target.style.transform = 'translateX(-112px)';
