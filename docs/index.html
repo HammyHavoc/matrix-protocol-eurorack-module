@@ -521,6 +521,20 @@
             function showNextMessage() {
                 if (sequenceIndex < connectionSequence.length) {
                     oledContent.textContent = connectionSequence[sequenceIndex];
+                    
+                    // Start audio when Hello World message appears (index 1)
+                    if (sequenceIndex === 1) {
+                        const ambientAudio = document.getElementById('ambientAudio');
+                        ambientAudio.volume = 0.3;
+                        console.log('Hello World appeared - starting audio...');
+                        
+                        ambientAudio.play().then(() => {
+                            console.log('Audio started with Hello World message');
+                        }).catch(e => {
+                            console.error('Audio failed to start:', e);
+                        });
+                    }
+                    
                     sequenceIndex++;
                     if (sequenceIndex < connectionSequence.length) {
                         setTimeout(showNextMessage, 10000); // Give more time for full scroll
@@ -543,33 +557,8 @@
             encoder.style.transform = `translateX(-50%) rotate(${rotation}deg) scale(1.05)`;
             
             if (!isConnected && !isConnecting) {
-                // First click - start connection sequence and prepare audio
-                const ambientAudio = document.getElementById('ambientAudio');
-                ambientAudio.volume = 0.3;
-                
-                console.log('Attempting to play audio...');
-                console.log('Audio element:', ambientAudio);
-                console.log('Audio src:', ambientAudio.currentSrc);
-                
-                // Try to start audio immediately on user interaction
-                ambientAudio.play().then(() => {
-                    console.log('Audio started successfully');
-                    // Update OLED to show audio status
-                    setTimeout(() => {
-                        if (oledContent.textContent.includes('Press encoder')) {
-                            oledContent.textContent = '♪ Audio: Connected ♪ Starting session...';
-                        }
-                    }, 1000);
-                }).catch(e => {
-                    console.error('Audio failed to start:', e);
-                    // Show error on display
-                    setTimeout(() => {
-                        if (oledContent.textContent.includes('Press encoder')) {
-                            oledContent.textContent = '⚠ Audio: Loading... ⚠ Session starting...';
-                        }
-                    }, 1000);
-                });
-                
+                // First click - start connection sequence
+                console.log('Starting connection sequence...');
                 playConnectionSequence();
             } else if (isConnected) {
                 // Cycle through status messages
