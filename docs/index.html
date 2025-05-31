@@ -525,19 +525,27 @@
                     // Start audio when Hello World message appears (index 1)
                     if (sequenceIndex === 1) {
                         const ambientAudio = document.getElementById('ambientAudio');
-                        const btn1 = document.querySelector('.btn1');
+                        const btn1 = document.querySelector('.push-button.btn1');
                         ambientAudio.volume = 0.3;
                         console.log('Hello World appeared - starting audio...');
+                        console.log('Button 1 element:', btn1);
                         
                         ambientAudio.play().then(() => {
                             console.log('Audio started with Hello World message');
                             // Make button 1 green to indicate audio is playing
-                            btn1.style.background = 'radial-gradient(circle, #44ff44, #22aa22)';
-                            btn1.style.boxShadow = '0 0 10px rgba(68, 255, 68, 0.5)';
+                            if (btn1) {
+                                btn1.style.background = 'radial-gradient(circle, #44ff44, #22aa22)';
+                                btn1.style.boxShadow = '0 0 10px rgba(68, 255, 68, 0.5)';
+                                console.log('Button 1 turned green');
+                            } else {
+                                console.error('Could not find button 1 element');
+                            }
                         }).catch(e => {
                             console.error('Audio failed to start:', e);
                             // Make button 1 red to indicate audio error
-                            btn1.style.background = 'radial-gradient(circle, #ff4444, #aa2222)';
+                            if (btn1) {
+                                btn1.style.background = 'radial-gradient(circle, #ff4444, #aa2222)';
+                            }
                         });
                     }
                     
