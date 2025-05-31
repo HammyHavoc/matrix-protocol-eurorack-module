@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Together - Eurorack Module Visualization</title>
@@ -12,6 +13,43 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50vw;
+            width: 200vw;
+            height: 600px;
+            background: 
+                /* Horizontal lines - perspective */
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 20px,
+                    rgba(0, 255, 255, 0.3) 21px,
+                    rgba(0, 255, 255, 0.3) 22px
+                ),
+                /* Vertical lines - converging */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0px,
+                    transparent 30px,
+                    rgba(0, 255, 255, 0.4) 31px,
+                    rgba(0, 255, 255, 0.4) 32px
+                );
+            transform: 
+                perspective(500px) 
+                rotateX(60deg) 
+                translateY(50px)
+                scaleY(2);
+            transform-origin: bottom center;
+            z-index: -1;
+            opacity: 0.8;
+            pointer-events: none;
         }
         
         .hero-background {
@@ -43,6 +81,8 @@
             display: flex;
             gap: 30px;
             flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
         }
         
         .panel {
@@ -51,6 +91,60 @@
             border-radius: 15px;
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+        
+        /* Remove background from module panel so it sits on the grid */
+        .panel:first-child {
+            background: transparent;
+            backdrop-filter: none;
+            border: none;
+            padding: 0;
+        }
+        
+        /* Sticky module when there's enough horizontal space */
+        @media (min-width: 1200px) {
+            .container {
+                flex-wrap: nowrap;
+                align-items: flex-start;
+                justify-content: flex-start;
+            }
+            
+            .panel:first-child {
+                position: sticky;
+                top: 20px;
+                height: fit-content;
+                max-height: calc(100vh - 40px);
+                overflow-y: auto;
+                width: 350px;
+                flex-shrink: 0;
+            }
+            
+            .info-panel {
+                flex: 1;
+                min-width: 400px;
+                margin-left: 30px;
+            }
+        }
+        
+        /* Center module on medium screens when content stacks */
+        @media (max-width: 1199px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .panel:first-child {
+                position: static;
+                width: auto;
+                max-width: 350px;
+            }
+            
+            .info-panel {
+                width: 100%;
+                max-width: 800px;
+            }
         }
         
         .eurorack-module {
@@ -272,8 +366,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="panel hero-background">
-            <h2>🎛️ Front Panel Preview</h2>
+        <div class="panel">
             <div class="eurorack-module" id="module">
                 <!-- Mounting holes -->
                 <div class="mounting-hole top-left"></div>
@@ -289,14 +382,14 @@
                 
                 <!-- OLED Display -->
                 <div class="oled-display">
-                    <div class="oled-content">◄ TOGETHER ► Connecting to Matrix space... ♪</div>
+                    <div class="oled-content">◄ TOGETHER ► Press encoder to connect ♪</div>
                 </div>
                 
                 <!-- Rotary Encoder -->
                 <div class="rotary-encoder" data-tooltip="Menu Navigation & Selection"></div>
                 
                 <!-- Push Buttons -->
-                <div class="push-button btn1" data-tooltip="Function Button 1"></div>
+                <div class="push-button btn1" data-tooltip="Mute/Unmute Audio"></div>
                 <div class="push-button btn2" data-tooltip="Function Button 2"></div>
                 <div class="push-button btn3" data-tooltip="Function Button 3"></div>
                 <div class="push-button btn4" data-tooltip="Function Button 4"></div>
@@ -313,24 +406,25 @@
             <h1>🌐 Together by Split An Atom</h1>
             <p><strong>Decentralized collaborative Eurorack via Matrix protocol</strong></p>
             
-            <h2>Key Features</h2>
-            <ul class="feature-list">
-                <li>🌍 Matrix protocol integration - decentralized, self-hostable, open source</li>
-                <li>🎵 4× 3.5mm TRS jacks (stereo I/O + MIDI support)</li>
-                <li>⚡ DC-coupled for control voltage compatibility</li>
-                <li>📟 128×64 OLED display with live session status</li>
-                <li>🎛️ Rotary encoder with push-button selection</li>
-                <li>🔘 4× tactile function buttons</li>
-                <li>🤝 Connect with collaborators globally or keep it intimate</li>
-                <li>🎲 Embrace serendipity with strangers and friends alike</li>
-            </ul>
-            
             <h2>The Vision</h2>
             <p><strong>Create globe-spanning Eurorack patches.</strong> Connect with collaborators, friends, family, strangers, and enemies through decentralized audio, MIDI, and CV sharing.</p>
             
             <p><strong>Matrix Protocol</strong> - the same open source, decentralized protocol trusted by EU government, military, and emergency services for real-time communications. Good enough for them, good enough for everyone.</p>
             
             <p><strong>Scale as needed:</strong> Keep it private with one-on-one sessions, get your whole band involved, or go global with new realms of scalable decentralized collaboration.</p>
+            
+            <h2>Key Features</h2>
+            <ul class="feature-list">
+                <li>🤝 Connect with collaborators globally or keep it intimate</li>
+                <li>🌍 Powered by Matrix protocol - decentralized, self-hostable, open source</li>
+                <li>🎲 Embrace serendipity with strangers and friends alike</li>
+                <li>🔧 Expandable with sidecar modules - add patchbays, comms, USB expansion</li>
+                <li>🎵 4× 3.5mm TRS jacks (stereo I/O + MIDI support)</li>
+                <li>⚡ DC-coupled for control voltage compatibility</li>
+                <li>📟 128×64 OLED display with live session status</li>
+                <li>🎛️ Rotary encoder with push-button selection</li>
+                <li>🔘 4× tactile function buttons</li>
+            </ul>
             
             <h2>Expandable Ecosystem</h2>
             <ul class="feature-list">
@@ -355,17 +449,27 @@
                 <tr><th>I/O Channels</th><td>4 in, 4 out (8 total)</td></tr>
                 <tr><th>CV Range</th><td>±10V (Eurorack standard)</td></tr>
                 <tr><th>MIDI</th><td>TRS Type A/B compatible</td></tr>
-                <tr><th>Display</th><td>Yellow OLED 128×64px</td></tr>
+                <tr><th>Display</th><td>Yellow OLED 128×64px (or white, blue, LCD, TFT - your choice!)</td></tr>
                 <tr><th>Host</th><td>Raspberry Pi 4 (40-pin header)</td></tr>
-                <tr><th>Software</th><td>Declarative, reproducible configurations</td></tr>
-                <tr><th>License</th><td>FOSS/FOSH - Open Source Hardware</td></tr>
+                <tr><th>Software</th><td>Declarative, reproducible Linux configurations</td></tr>
+                <tr><th>License</th><td>FOSS/FOSH - Open Source Software & Hardware</td></tr>
             </table>
+            
+            <p><strong>Customize your display:</strong> Thanks to the open source design, you're not stuck with yellow! Drop in white, blue, or red OLEDs for different aesthetics. Want something completely different? Try I2C LCD displays or small color TFT displays.</p>
+            
+            <p><strong>Make it yours:</strong> Choose from different faceplate designs or have a bespoke one fabricated to match your aesthetic. The beauty of open hardware is making it truly yours.</p>
             
             <p><strong>Not a Eurorack user?</strong> Plug in a high-quality external PSU and 3D print a case to fit your use!</p>
         </div>
     </div>
     
     <div class="tooltip" id="tooltip"></div>
+    
+    <!-- Audio element for ambient space soundtrack -->
+    <audio id="ambientAudio" loop>
+        <source src="https://archive.org/download/horns-of-a-heart-lost-and-found/02%20-%20Horns%20of%20a%20Heart%20%28The%20Orion%20Correlation%20Remix%29.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     
     <script>
         // Interactive tooltips
@@ -388,33 +492,115 @@
             });
         });
         
+        // Connection and status management
+        const oledContent = document.querySelector('.oled-content');
+        const connectionSequence = [
+            '◄ TOGETHER ► Connecting to Matrix space... ♪',
+            '◄ ハローワールド ► Hello world! ♪',
+            '🎵 Space: "Ambient Dreams" ◆ 1085 users connected ♪'
+        ];
+        
+        // Status messages for encoder cycling after connection
+        const statusMessages = [
+            '⚡ CV Out: +2.4V ◆ Tempo: 128 BPM ◆ Key: Am ♪',
+            '🌐 Latency: 12ms ◆ Sync: LOCKED ◆ Buffer: 64 ♪',
+            '🎲 Serendipity: ACTIVE ◆ Globe-spanning patch ♪',
+            '🎵 Space: "Ambient Dreams" ◆ 1085 users connected ♪',
+            '🎶 Now Playing: "Horns of a Heart (Orion Remix)" ♪'
+        ];
+        
+        let isConnected = false;
+        let isConnecting = false;
+        let statusIndex = 0;
+        
+        // Connection sequence function
+        function playConnectionSequence() {
+            let sequenceIndex = 0;
+            isConnecting = true;
+            
+            function showNextMessage() {
+                if (sequenceIndex < connectionSequence.length) {
+                    oledContent.textContent = connectionSequence[sequenceIndex];
+                    sequenceIndex++;
+                    if (sequenceIndex < connectionSequence.length) {
+                        setTimeout(showNextMessage, 10000); // Give more time for full scroll
+                    } else {
+                        // Connection sequence complete
+                        isConnecting = false;
+                        isConnected = true;
+                    }
+                }
+            }
+            showNextMessage();
+        }
+        
         // Interactive encoder rotation
         let rotation = 0;
         const encoder = document.querySelector('.rotary-encoder');
+        
         encoder.addEventListener('click', () => {
             rotation += 30;
             encoder.style.transform = `translateX(-50%) rotate(${rotation}deg) scale(1.05)`;
             
-            // Update OLED display
-            const oledContent = document.querySelector('.oled-content');
-            const messages = [
-                '◄ TOGETHER ► Connecting to Matrix space... ♪',
-                '🎵 Space: "Ambient Dreams" ◆ 3 users connected ♪',
-                '⚡ CV Out: +2.4V ◆ Tempo: 128 BPM ◆ Key: Am ♪',
-                '🌐 Latency: 12ms ◆ Sync: LOCKED ◆ Buffer: 64 ♪',
-                '🎲 Serendipity: ACTIVE ◆ Globe-spanning patch ♪'
-            ];
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            oledContent.textContent = randomMessage;
+            if (!isConnected && !isConnecting) {
+                // First click - start connection sequence and prepare audio
+                const ambientAudio = document.getElementById('ambientAudio');
+                ambientAudio.volume = 0.3;
+                
+                // Try to start audio immediately on user interaction
+                ambientAudio.play().then(() => {
+                    console.log('Audio started successfully');
+                }).catch(e => {
+                    console.log('Audio will start after connection sequence:', e);
+                });
+                
+                playConnectionSequence();
+            } else if (isConnected) {
+                // Cycle through status messages
+                oledContent.textContent = statusMessages[statusIndex];
+                statusIndex = (statusIndex + 1) % statusMessages.length;
+            }
+            // Do nothing if currently connecting
         });
         
-        // Button press animation
+        // Button press animation and functionality
         document.querySelectorAll('.push-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                e.target.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    e.target.style.transform = 'scale(1)';
-                }, 150);
+                // Handle mute/unmute for button 1
+                if (e.target.classList.contains('btn1')) {
+                    const ambientAudio = document.getElementById('ambientAudio');
+                    if (ambientAudio.muted) {
+                        ambientAudio.muted = false;
+                        e.target.style.background = 'radial-gradient(circle, #444, #222)';
+                    } else {
+                        ambientAudio.muted = true;
+                        e.target.style.background = 'radial-gradient(circle, #ff4444, #aa2222)';
+                    }
+                }
+                
+                // Apply scale while preserving position
+                if (e.target.classList.contains('btn1')) {
+                    const currentBg = e.target.style.background;
+                    e.target.style.transform = 'translateX(-112px) scale(0.8)';
+                    setTimeout(() => {
+                        e.target.style.transform = 'translateX(-112px)';
+                    }, 150);
+                } else if (e.target.classList.contains('btn2')) {
+                    e.target.style.transform = 'translateX(-42px) scale(0.8)';
+                    setTimeout(() => {
+                        e.target.style.transform = 'translateX(-42px)';
+                    }, 150);
+                } else if (e.target.classList.contains('btn3')) {
+                    e.target.style.transform = 'translateX(28px) scale(0.8)';
+                    setTimeout(() => {
+                        e.target.style.transform = 'translateX(28px)';
+                    }, 150);
+                } else if (e.target.classList.contains('btn4')) {
+                    e.target.style.transform = 'translateX(98px) scale(0.8)';
+                    setTimeout(() => {
+                        e.target.style.transform = 'translateX(98px)';
+                    }, 150);
+                }
             });
         });
         
